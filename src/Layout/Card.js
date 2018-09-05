@@ -7,7 +7,7 @@ const Card = styled.div`
   margin: 20px;
   position: relative;
   margin-bottom: 50px;
-  padding: 40px;
+  padding: 80px;
   height: 80vh;
 `
 export default Card

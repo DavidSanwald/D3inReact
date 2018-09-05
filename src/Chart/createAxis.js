@@ -45,7 +45,7 @@ function createXAxis (selection, props = {}) {
 }
 
 function createYAxis (selection, props) {
-  const { width, height, yScale, yAxisTickFontFill = '#8E8883', yAxisTickFontSize = '12px', yAxisTickLineStroke = '#C0C0BB', yAxisDomainLineStroke = '#C0C0BB', yAxisLabelFontSize = '16px', yAxisLabelFill = '#635F5D', yAxisLabel = 'Temperature, ºF', yAxisLabelOffset = 44, yAxisTickDensity = 70 } = props
+  const { height, yScale, yAxisTickFontFill = '#8E8883', yAxisTickFontSize = '12px', yAxisTickLineStroke = '#C0C0BB', yAxisDomainLineStroke = '#C0C0BB', yAxisTickDensity = 70 } = props
   const yAxis = d3.axisLeft(yScale).ticks(height / yAxisTickDensity)
 
   let yAxisG = selection.selectAll('.y-axis').data([null])
@@ -69,8 +69,13 @@ function createYAxis (selection, props) {
   yAxisG
     .select('.domain')
     .attr('stroke', yAxisDomainLineStroke)
+}
 
-  const yAxisLabelText = yAxisG.selectAll('.axis-label').data([null])
+function createYAxisLabelText (selection, props = {}) {
+  const { height, yAxisLabelFontSize = '16px', yAxisLabelFill = '#635F5D', yAxisLabel = 'Temperature, ºF', yAxisLabelOffset = 44 } = props
+
+  const yAxisLabelText = selection.select('.y-axis').selectAll('.axis-label').data([null])
+
   yAxisLabelText
     .enter().append('text')
     .attr('class', 'axis-label')
@@ -83,4 +88,4 @@ function createYAxis (selection, props) {
     .style('font-size', yAxisLabelFontSize)
 }
 
-export { createYAxis, createXAxis }
+export { createYAxis, createXAxis, createYAxisLabelText }

@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { createXAxis, createYAxis } from './createAxis'
+import { createYAxisLabelText, createXAxis, createYAxis } from './createAxis'
 import { createLines } from './createLines'
 import { createDots } from './createDots'
 import { createMarginGroup } from './createMarginGroup'
@@ -8,20 +8,16 @@ const margin = { top: 20, bottom: 71, left: 78, right: 20 }
 
 const getX = d => d.date
 const getY = d => d.temperature
-const parseTime = d3.timeParse('%Y%m%d')
-
-const transformDatum = d => ({ ...d, date: parseTime(d.date) })
-
-const transformSeries = series => ({ ...series, values: series.values.map(transformDatum) })
 
 const getAllValues = data => data.reduce((acc, curr) => acc.concat(curr.values), [])
 
 function renderChart (node, props) {
-  const { width: outerWidth, height: outerHeight, data: rawData } = props
-  const data = rawData.map(transformSeries)
+  const { width: outerWidth, height: outerHeight, range, data } = props
   const allValues = getAllValues(data)
   const xDomain = d3.extent(allValues, getX)
   const yDomain = d3.extent(allValues, getY)
+
+  const newRange = range || xDomain
 
   const root = d3.select(node)
 
@@ -41,7 +37,8 @@ function renderChart (node, props) {
 
   createXAxis(g, { xScale, height, width })
   createYAxis(g, { yScale, height, width })
+  createYAxisLabelText(g, { yScale, height, width })
   createLines(g, { xScale, yScale, data })
-  createDots(g, { xScale, yScale, data })
+  createDots(g, { xScale, yScale, data, range: newRange })
 }
 export { renderChart }
