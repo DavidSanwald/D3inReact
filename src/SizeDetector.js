@@ -13,7 +13,7 @@ class SizeDetector extends Component {
     super(props)
     this.nodeRef = React.createRef()
     this.state = {
-      renderElement: 'dummy',
+      renderElement: 'placeholder',
       size: { width: undefined, height: undefined }
     }
   }
@@ -39,7 +39,7 @@ class SizeDetector extends Component {
     return (
       <div ref={this.nodeRef} style={{ width: '100%', height: '100%' }} >
         {
-          this.state.renderElement === 'dummy' ? <div />
+          this.state.renderElement === 'placeholder' ? <div />
             : this.props.render(this.state.size)
         }
       </div>

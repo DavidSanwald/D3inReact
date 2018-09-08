@@ -1,8 +1,14 @@
 import * as d3 from 'd3'
+
+function innerSize (props) {
+  const { margin, outerHeight, outerWidth } = props
+  const width = outerWidth - margin.left - margin.right
+  const height = outerHeight - margin.top - margin.bottom
+  return { width, height }
+}
+
 function createMarginGroup (selection, props) {
   const {
-    outerWidth,
-    outerHeight,
     margin,
     className = 'margin-group'
   } = props
@@ -14,10 +20,5 @@ function createMarginGroup (selection, props) {
     .attr('class', className)
     .merge(g)
     .attr('transform', `translate(${margin.left}, ${margin.top})`)
-
-  const width = outerWidth - margin.left - margin.right
-  const height = outerHeight - margin.top - margin.bottom
-
-  return { g, width, height }
 }
-export { createMarginGroup }
+export { innerSize, createMarginGroup }

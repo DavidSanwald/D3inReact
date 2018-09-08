@@ -3,51 +3,42 @@ import React, { Component } from 'react'
 import SizeDetector from './SizeDetector'
 import Chart from './Chart'
 import data from './mockData'
-import Item from './Item'
 import MainWrapper from './Layout/MainWrapper'
 import Card from './Layout/Card'
-import Brush from './Chart/Brush'
+import Title from './Layout/Title'
+import { evolve, prop, filter, compose, assoc, lensPath, lensIndex, mean, lensProp, view, set, over, map, both } from 'ramda'
+import { getXFromSeries, setNewSeries, setNewSelection, getYFromSeries, inRange } from './dataUtils'
 
 import './App.css'
-const parseTime = d3.timeParse('%Y%m%d')
-const transformDatum = d => ({ ...d, date: parseTime(d.date) })
-const transformSeries = series => ({ ...series, values: series.values.map(transformDatum) })
+const timeParser = d3.timeParse('%Y%m%d')
+const parseDatum = evolve({ date: timeParser })
+const initSelected = assoc('isSelected', true)
+const initDatum = compose(parseDatum, initSelected)
+const initSeries = evolve({ values: map(initDatum) })
 
-const toggleStatus = datum => {
-  const newStatus = datum.status === 'visible' ? 'hidden' : 'visible'
-  const newDatum = { ...datum, status: newStatus }
-  console.log(newDatum)
-  return newDatum
-}
-const toggleByID = id => state => {
-  const newData = state.data.map(datum => datum.id === id ? toggleStatus(datum) : datum)
-  return ({ ...state, data: newData })
-}
-
-const inBounds = range => datum => datum.date > range[0] && datum.date < range[1]
 class App extends Component {
   constructor (props) {
     super(props)
-    this.state = { range: undefined, data: [] }
+    this.state = { data: [] }
   }
   componentDidMount () {
-    this.setState({ data: data.map(transformSeries) })
+    this.setState({ data: map(initSeries, data) })
   }
 
-  handleBrush = e => {
-    this.setState({ range: e })
+  handleBrush = range => {
+    this.setState(setNewSelection(range))
   }
-  toggleDatum = id => () => {
-    this.setState(toggleByID(id))
-  }
+
   render () {
-    const data = this.state.data.map(datum => ({ ...datum, values: datum.values }))
+    const { data } = this.state
+    const dataMean = 5
     return (
       <MainWrapper>
         <Card>
-          {this.state.data.map(datum => <Item name={datum.id} key={datum.id} handleClick={this.toggleDatum} />)}
-          <SizeDetector delay={300} render={({ width, height }) => (<div><Chart range={this.state.range} data={this.state.data.filter(datum => datum.status === 'visible')} width={width} height={2 * height / 3} aspectRatio={0.5} />
-            <Brush data={this.state.data.filter(datum => datum.status === 'visible')} handleBrush={this.handleBrush} width={width} height={height / 3} /></div>)} />
+          <Title>{dataMean.toFixed(2)}</Title>
+          <SizeDetector delay={300} render={({ width, height }) => (this.state.data.length > 0
+            ? <Chart handleBrush={this.handleBrush} data={data} width={width} height={height} aspectRatio={0.5} /> : null
+          )} />
         </Card>
       </MainWrapper>
 

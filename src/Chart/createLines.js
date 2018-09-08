@@ -8,7 +8,6 @@ const color = {
 function createLines (selection, props) {
   const y = d => d.temperature
   const x = d => d.date
-  const key = d => d.id
 
   const { data, xScale, yScale } = props
 
@@ -19,7 +18,7 @@ function createLines (selection, props) {
     .curve(d3.curveCatmullRom.alpha(0.5))
 
   let linesUpdate = selection.selectAll('.line')
-    .data(data, d => key(d))
+    .data(data)
 
   let linesEnter = linesUpdate
     .enter()
@@ -50,7 +49,7 @@ function createLines (selection, props) {
     .attr('stroke-linejoin', 'round')
     .attr('stroke-linecap', 'round')
     .attr('stroke-width', 1)
-    .attr('stroke', d => color[d.id])
+    .attr('stroke', '#ffb14e')
     .attr('d', d => line(d.values))
 
   return linesMerged
