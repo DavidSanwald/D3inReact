@@ -1,39 +1,29 @@
 import * as d3 from 'd3'
-import { flatten, concat, prop, map, propEq, filter, pluck, compose, curry } from 'ramda'
-import data from './mockData'
-const debug = (color = 'green') => input => {
-  console.log(`%c${input}`, `color: ${color};`)
-  return input
-}
-const db = debug()
+import { prop, curry, pluck, compose, head, takeLast, drop, dropLast, converge, chain } from 'ramda'
+
 const xKey = 'date'
-const yKey = 'temperature'
+const yKey = 'value'
 const valuesKey = 'values'
-console.log(data)
-export const pluckX = pluck(xKey)
-export const pluckY = pluck(yKey)
-export const pluckValues = pluck(valuesKey)
+const idKey = 'id'
 
 export const x = prop(xKey)
 export const y = prop(yKey)
 export const values = prop(valuesKey)
-export const pluckFlattenValues = compose(flatten, pluckValues)
+export const id = prop(idKey)
 
-export const getXFromSeries = compose(pluckX, pluckFlattenValues)
-export const getYFromSeries = compose(pluckY, pluckFlattenValues)
+export const pluckY = pluck(yKey)
+export const pluckX = pluck(xKey)
+export const pluckId = pluck(idKey)
 
-export const getFilteredValues = predicate => compose(filter(predicate), pluckFlattenValues)
+export const getAllPoints = chain(values)
 
-export const inRange = curry((range, date) => range[0] <= date && range[1] > date)
+export const getFirstSeries = head
+export const getFirstItem = compose(head)
 
-export const setNewSelection = range => oldState => {
-  const inCurrentRange = inRange(range)
-  const changeSelectionDatum = datum => ({ ...datum, isSelected: inCurrentRange(datum.date) })
-  const setNewSeries = series => ({ ...series, values: map(changeSelectionDatum, series.values) })
-  const newState = { ...oldState, data: map(setNewSeries, oldState.data) }
-  return newState
-}
-const newData = pluckFlattenValues(data)
-console.log(newData)
+export const getLastItem = compose(head, takeLast(1))
+export const dropNEnds = n => compose(drop(n), dropLast(n))
 
-export const getSelected = filter(prop('isSelected'))
+export const getFirstLastItem = compose(converge((...xs) => xs, [getFirstItem, getLastItem]))
+export const inRange = curry((range, date) => range[0] <= date && date <= range[1])
+
+export const datumInRange = range => compose(inRange(range), x)

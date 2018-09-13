@@ -1,25 +1,22 @@
 import React, { Component } from 'react'
-import { renderChart } from './renderChart'
-import { renderBrush } from './renderBrush'
+import { drawChart } from './drawChart'
 
 class Chart extends Component {
   constructor (props) {
     super(props)
-    this.nodeRef = React.createRef()
-    this.nodeRef2 = React.createRef()
+    this.nodeRefFocus = React.createRef()
+    this.nodeRefContext = React.createRef()
   }
   componentDidMount () {
-    renderChart(this.nodeRef.current, { ...this.props, height: 2 * this.props.height / 3 })
-    renderBrush(this.nodeRef2.current, { ...this.props, height: this.props.height / 3 })
+    drawChart({ nodeFocus: this.nodeRefFocus.current, nodeContext: this.nodeRefContext.current }, { ...this.props, height: this.props.height })
   }
   shouldComponentUpdate (nextProps, nextState) {
-    renderChart(this.nodeRef.current, { ...nextProps, height: 2 * nextProps.height / 3 })
-    renderBrush(this.nodeRef2.current, { ...nextProps, height: nextProps.height / 3 })
+    drawChart({ nodeFocus: this.nodeRefFocus.current, nodeContext: this.nodeRefContext.current }, { ...nextProps, height: nextProps.height })
 
     return false
   }
   render () {
-    return <div><div ref={this.nodeRef} /> <div ref={this.nodeRef2} /></div>
+    return <div><div ref={this.nodeRefFocus} /> <div ref={this.nodeRefContext} /></div>
   }
 }
 
